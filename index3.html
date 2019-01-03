@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Vue tutorial</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  </head>
+  <body>
+    <div id="app">
+      <h1 @click="tutorialDemo">The counter value = {{counter}}</h1>
+      <form class="border m-2 p-4" :class="typeJob == 'list' ? 'border-primary' : 'border-danger'">
+        <div class="form-row">
+          <div class="form-group col-md-6">
+            <div class="form-group">
+              <input type="radio" name="type" v-model="typeJob" value="list" :checked="typeJob=='list'">Список каналов
+              <input type="radio" name="type" v-model="typeJob" value="search" :checked="typeJob=='search'">Поиск
+            </div>
+            <div v-if="typeJob == 'search'" class="form-group">
+              <label>Search: {{search}}</label>  
+              <label v-if="search.length">Count of symbols: {{search.length}}</label>
+            </div>
+            <div v-if="typeJob == 'search'" class="form-group">
+              <input type="text" class="form-group" name="search" v-model="search" placeholder="Введите значение"/>     
+            </div>
+            <div v-if="checkPick.length" class="form-group">
+              {{checkPick}} - {{checkPick.length}}
+            </div>
+          </div>
+          <div class="form-group col-md-6">
+            <div class="jumbotron">
+              <div v-if="typeJob == 'search'" class="form-check" v-for="elem in hashtags"> 
+                <label class="form-check-label">
+                  <input type="checkbox" class="form-check-input" v-model="checkPick" :value="elem">
+                  {{hashtag}}
+                </label>
+              </div>
+            </div>
+          </div> 
+        </div>
+      </form>
+      <a href="#" @click="tutorialDemo">Press me</a>
+      {{typeJob}}
+      <label for="" v-bind:title="getDate">Checking time</label>
+    </div>
+  </body>
+  <script src="https://code.jquery.com/jquery-3.2.1.min.js" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <script type="text/javascript">
+    var app = new Vue({
+      el: '#app',
+      data: {
+        message: 'Hello Vue!',
+        getDate: 'The current time is ' + new Date().toLocaleString(),
+        typeJob: 'list',
+        counter: 0,
+        search:  '',
+        hashtags: [],
+        checkPick: [],
+      },
+      watch: {
+        search: function() {
+          this.search.length >= 2 ? this.lookupHashtag() : this.hashtags = [];
+        }    
+      },
+      methods: {
+        tutorialDemo: function() {
+          this.counter++;    
+        },
+        lookupHashtag: function() {
+          var app = this;
+          $.ajax({
+            url: 'https://dka-telegram.ru/channel/api?type=hashtags',
+            dataType: 'json',
+            data: {
+              name: app.search
+            },
+            success: function(json) {
+              app.hashtags = json
+            }
+          })
+        }
+      }
+    })
+  </script>
+</html>
+  
